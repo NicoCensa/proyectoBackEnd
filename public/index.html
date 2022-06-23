@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+<body class="container">
+    <h1>Productos</h1>
+    <div id="products"></div>
+
+    <h2>Agregar Producto (Admin)</h2>
+    <form class="mb-3" id="newProduct" action='/api/products' method="post">
+        <div class="mb-3">
+          <input type="number" name="id" id="id" placeholder="ID">
+        </div>
+        <div class="mb-3">
+          <input type="text" name="title" id="title" placeholder="Title">
+        </div>
+        <div class="mb-3">
+          <input type="number" name="price" id="price" placeholder="Price">
+        </div>
+        <div class="mb-3">
+          <input type="text" name="thumbnail" id="thumbnail" placeholder="thumbnail">
+        </div>
+        <div class="mb-3">
+            <input type="number" name="stock" id="stock" placeholder="Stock">
+        </div>
+        <div class="mb-3">
+            <input type="text" name="code" id="code" placeholder="Code">
+        </div>
+        <div class="mb-3">
+            <input type="text" name="description" id="description" placeholder="Description">
+        </div>
+    
+        <button id="load">Cargar</button>
+      </form>
+
+      <h2>Carrito</h2>
+      <div id="cart"></div>
+
+    <script>
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(products => {
+                let html = `<div class="card-group">`;
+                for (const product of products) {
+                    html +=  `
+                                <div class="card">
+                                    <img src="${product.thumbnail}" class="card-img-top" alt="...">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${product.title}</h5>
+                                        <p class="card-text">${product.price}</p>
+                                        <p class="card-text"><small class="text-muted">${product.description}</small></p>
+                                        <p class="card-text"><small class="text-muted">${product.id}</small></p>
+                                        <p class="card-text"><small class="text-muted">${product.code}</small></p>
+                                        <div class="container">
+                                            <button  class="btn btn-primary actBtn">Actualizar</button>
+                                            <button  class="btn btn-primary delBtn">Eliminar</button>
+                                            <button data-id="${product.id}" class="btn btn-primary addBtn">Agregar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `
+                }
+
+                html += `</div>`;
+                
+                document.getElementById('products').innerHTML = html
+                loadEvent()
+            }
+            )
+            .catch(error => {
+                console.log(error)
+            });
+                        
+            fetch(`/api/cart/1/products`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data)
+                            let html = `<div class="card-group">`;
+                            for (const product of data.products) {
+                                html +=  `
+                                            <div class="card">
+                                                <img src="${product.thumbnail}" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${product.title}</h5>
+                                                    <p class="card-text">${product.price}</p>
+                                                    <p class="card-text"><small class="text-muted">${product.description}</small></p>
+                                                    <p class="card-text"><small class="text-muted">${product.id}</small></p>
+                                                    <p class="card-text"><small class="text-muted">${product.code}</small></p>
+                                                    <div class="container">
+                                                        <button  class="btn btn-primary restBtn">Quitar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `
+                            }
+
+                            html += `</div>`;
+                
+                        document.getElementById('cart').innerHTML = html})
+                        .catch((error) => {
+                            console.error('Error:', error);});
+
+        function loadEvent() {
+            const delBtn = document.getElementsByClassName('delBtn')
+            const addBtn = document.getElementsByClassName('addBtn')
+            for (const btn of addBtn) {
+                btn.onclick = (e) => {
+                    const id = e.target.getAttribute('data-id')
+                    fetch(`/api/products/${id}`)
+                    .then(response => response.json())
+                    .then(product=>{
+                        console.log(product)
+                        
+                        fetch(`/api/cart/1/products`,
+                        {method:'POST',headers: {
+                            "Content-type": "application/json; charset=UTF-8"
+                            },
+                        body:JSON.stringify(product)}
+                        )
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data)
+                            let html = `<div class="card-group">`;
+                            for (const product of data.products) {
+                                html +=  `
+                                            <div class="card">
+                                                <img src="${product.thumbnail}" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${product.title}</h5>
+                                                    <p class="card-text">${product.price}</p>
+                                                    <p class="card-text"><small class="text-muted">${product.description}</small></p>
+                                                    <p class="card-text"><small class="text-muted">${product.id}</small></p>
+                                                    <p class="card-text"><small class="text-muted">${product.code}</small></p>
+                                                    <div class="container">
+                                                        <button  class="btn btn-primary restBtn">Quitar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `
+                            }
+
+                            html += `</div>`;
+                
+                        document.getElementById('cart').innerHTML = html})
+                        .catch((error) => {
+                            console.error('Error:', error);});
+                    }
+                    )
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        });
+
+                }
+            }
+            for (const btn of delBtn) {
+                btn.onclick = (e) => {
+                    const id = e.target.getAttribute('data-id')
+                    fetch(`/api/products/${id}`,{method:'DELETE'})
+                    .then(response =>
+                            fetch('/api/products')
+                            .then(response => response.json())
+                            .then(products => {
+                                let html = `<div class="card-group">`;
+                                for (const product of products) {
+                                    html +=  `
+                                                <div class="card">
+                                                    <img src="${product.thumbnail}" class="card-img-top" alt="...">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">${product.title}</h5>
+                                                        <p class="card-text">${product.price}</p>
+                                                        <p class="card-text"><small class="text-muted">${product.description}</small></p>
+                                                        <p class="card-text"><small class="text-muted">${product.id}</small></p>
+                                                        <p class="card-text"><small class="text-muted">${product.code}</small></p>
+                                                        <div class="container">
+                                                            <button  class="btn btn-primary actBtn">Actualizar</button>
+                                                            <button  class="btn btn-primary delBtn">Eliminar</button>
+                                                            <button data-id="${product.id}" class="btn btn-primary addBtn">Agregar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `
+                                }
+
+                                html += `</div>`;
+                                
+                                document.getElementById('products').innerHTML = html
+                                loadEvent()
+                                    }
+                                    )
+                    )
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        });
+
+                }
+            }
+        }
+
+    </script>
+    <script src="/app.js"></script>
+    <script src="/public/main.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+</body>
+</html>
