@@ -44,7 +44,7 @@ cartRouter.delete('/:id/products/:id', (req, res) => {
     cartMod['id'] = cartID;
     console.log(cartMod);
     contenedorCart.deleteByID(cartID);
-    res.json(contenedorCart.save(cartMod))
+    res.json(contenedorCart.editCartById(cartMod,cartID))
 })
 
 cartRouter.post('/:id/products', (req, res) => {
@@ -53,7 +53,7 @@ cartRouter.post('/:id/products', (req, res) => {
     const cart =  contenedorCart.getByID(cartID)
     cart.products.push(product)
 
-    const newObj = contenedorCart.editByBody(cart, cartID)
+    const newObj = contenedorCart.editCartByBody(cart, cartID)
 
     res.json(newObj)
 })

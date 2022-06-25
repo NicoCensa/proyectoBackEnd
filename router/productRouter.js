@@ -31,7 +31,7 @@ productRouter.post('/',auth, (req, res) => {
 
 productRouter.put('/:id',auth, (req, res) => {
     console.log(req.body)
-    res.json(contenedorProducts.editByBody(req.body, req.params.id))
+    res.json(contenedorProducts.editProductById(req.body, parseInt(req.params.id)))
 })
 
 productRouter.delete('/:id',auth, (req, res) => {

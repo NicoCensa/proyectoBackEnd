@@ -34,16 +34,26 @@ class Contenedor {
         return objID
     }
 
-    editById(obj , id) {
+    editCartById(obj , id) {
         obj['id'] = id
         const idx = this.getAll().findIndex(p => p.id === id)
         this.getAll().splice(idx , 0 , obj )
         this.write()
     }
 
-    editByBody (obj , id) {
+    editCartByBody (obj , id) {
         obj['id'] = id
         const idx = this.getAll().findIndex(p => p.id === obj.id)
+        this.getAll().splice(idx , 1 , obj )
+        this.write()
+
+        return obj
+    }
+
+    editProductById (obj , id) {
+        obj['id'] = id
+        const idx = this.getAll().findIndex(p => p.id === obj.id)
+        console.log("Este es el log",idx)
         this.getAll().splice(idx , 1 , obj )
         this.write()
 
