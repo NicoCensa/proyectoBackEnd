@@ -35,14 +35,11 @@ cartRouter.delete('/:id/products/:id', (req, res) => {
     let cartMod={products:[]};
     for(product of cart.products)
     {
-        console.log(product)
         if(product.id != prodId){
             cartMod.products.push(product);
         }
     };
-    console.log(cartID);
     cartMod['id'] = cartID;
-    console.log(cartMod);
     contenedorCart.deleteByID(cartID);
     res.json(contenedorCart.editCartById(cartMod,cartID))
 })

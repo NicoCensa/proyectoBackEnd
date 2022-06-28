@@ -39,17 +39,37 @@
         <button id="load">Cargar</button>
       </form>
 
+    <div id="actProd">
+        <h2>Actualizar Producto</h2>
+        <form class="mb-3" id="newProduct" action='/api/products' method="post">
+            <div class="mb-3">
+            <input type="text" name="actTitle" id="actTitle" placeholder="Title">
+            </div>
+            <div class="mb-3">
+            <input type="number" name="actPrice" id="actPrice" placeholder="Price">
+            </div>
+            <div class="mb-3">
+            <input type="text" name="actThumbnail" id="actThumbnail" placeholder="thumbnail">
+            </div>
+            <div class="mb-3">
+                <input type="number" name="stock" id="stock" placeholder="Stock">
+            </div>
+            <div class="mb-3">
+                <input type="text" name="code" id="code" placeholder="Code">
+            </div>
+            <div class="mb-3">
+                <input type="text" name="description" id="description" placeholder="Description">
+            </div>
+            <button id="updateBtn">Actualizar</button>
+        </form>
+    </div>
+
       <h2>Carrito</h2>
       <div id="cart"></div>
 
     <script>
-        fetch('/api/products')
-            .then(response => response.json())
-            .then(products => {
-                let html = `<div class="card-group">`;
-                for (const product of products) {
-                    html +=  `
-                                <div class="card">
+        function printProducts(product){
+            html = `<div class="card">
                                     <img src="${product.thumbnail}" class="card-img-top" alt="...">
                                     <div class="card-body">
                                         <h5 class="card-title">${product.title}</h5>
@@ -63,14 +83,39 @@
                                             <button data-id="${product.id}" class="btn btn-primary addBtn">Agregar</button>
                                         </div>
                                     </div>
-                                </div>
-                            `
+                                </div>`;
+            return html;
+        }
+
+        function printCartProducts(product){
+            html = `<div class="card">
+                        <img src="${product.thumbnail}" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.title}</h5>
+                                <p class="card-text">${product.price}</p>
+                                <p class="card-text"><small class="text-muted">${product.description}</small></p>
+                                <p class="card-text"><small class="text-muted">${product.id}</small></p>
+                                <p class="card-text"><small class="text-muted">${product.code}</small></p>
+                            <div class="container">
+                                <button data-id="${product.id}" class="btn btn-primary restBtn">Quitar</button>
+                            </div>
+                        </div>
+                    </div>`;
+            return html;
+        }
+
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(products => {
+                let html = `<div class="card-group">`;
+                for (const product of products) {
+                    html +=  printProducts(product);
                 }
 
                 html += `</div>`;
                 
                 document.getElementById('products').innerHTML = html
-                loadEvent()
+
             }
             )
             .catch(error => {
@@ -83,30 +128,21 @@
                             console.log(data)
                             let html = `<div class="card-group">`;
                             for (const product of data.products) {
-                                html +=  `
-                                            <div class="card">
-                                                <img src="${product.thumbnail}" class="card-img-top" alt="...">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">${product.title}</h5>
-                                                    <p class="card-text">${product.price}</p>
-                                                    <p class="card-text"><small class="text-muted">${product.description}</small></p>
-                                                    <p class="card-text"><small class="text-muted">${product.id}</small></p>
-                                                    <p class="card-text"><small class="text-muted">${product.code}</small></p>
-                                                    <div class="container">
-                                                        <button  class="btn btn-primary restBtn">Quitar</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        `
+                                html +=  printCartProducts(product);
                             }
 
                             html += `</div>`;
                 
-                        document.getElementById('cart').innerHTML = html})
+                        document.getElementById('cart').innerHTML = html
+                        loadEvent()
+                        loadCartEvent()
+                    })
+                        
                         .catch((error) => {
                             console.error('Error:', error);});
 
-        function loadEvent() {
+            
+            function loadEvent() {
             const delBtn = document.getElementsByClassName('delBtn')
             const addBtn = document.getElementsByClassName('addBtn')
             for (const btn of addBtn) {
@@ -115,8 +151,6 @@
                     fetch(`/api/products/${id}`)
                     .then(response => response.json())
                     .then(product=>{
-                        console.log(product)
-                        
                         fetch(`/api/cart/1/products`,
                         {method:'POST',headers: {
                             "Content-type": "application/json; charset=UTF-8"
@@ -125,29 +159,17 @@
                         )
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data)
                             let html = `<div class="card-group">`;
                             for (const product of data.products) {
-                                html +=  `
-                                            <div class="card">
-                                                <img src="${product.thumbnail}" class="card-img-top" alt="...">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">${product.title}</h5>
-                                                    <p class="card-text">${product.price}</p>
-                                                    <p class="card-text"><small class="text-muted">${product.description}</small></p>
-                                                    <p class="card-text"><small class="text-muted">${product.id}</small></p>
-                                                    <p class="card-text"><small class="text-muted">${product.code}</small></p>
-                                                    <div class="container">
-                                                        <button  class="btn btn-primary restBtn">Quitar</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        `
+                                html +=  printCartProducts(product);
                             }
 
                             html += `</div>`;
                 
-                        document.getElementById('cart').innerHTML = html})
+                        document.getElementById('cart').innerHTML = html
+                        loadCartEvent()
+                        
+                    })    
                         .catch((error) => {
                             console.error('Error:', error);});
                     }
@@ -168,29 +190,41 @@
                             .then(products => {
                                 let html = `<div class="card-group">`;
                                 for (const product of products) {
-                                    html +=  `
-                                                <div class="card">
-                                                    <img src="${product.thumbnail}" class="card-img-top" alt="...">
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">${product.title}</h5>
-                                                        <p class="card-text">${product.price}</p>
-                                                        <p class="card-text"><small class="text-muted">${product.description}</small></p>
-                                                        <p class="card-text"><small class="text-muted">${product.id}</small></p>
-                                                        <p class="card-text"><small class="text-muted">${product.code}</small></p>
-                                                        <div class="container">
-                                                            <button  class="btn btn-primary actBtn">Actualizar</button>
-                                                            <button  class="btn btn-primary delBtn">Eliminar</button>
-                                                            <button data-id="${product.id}" class="btn btn-primary addBtn">Agregar</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            `
+                                    html +=  printProducts(product);
+                                }
+                                html += `</div>`;
+                                document.getElementById('products').innerHTML = html
+                                loadEvent()
+                                    }
+                                    )
+                    )
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        });
+
+                }
+            }
+        }
+
+        function loadCartEvent(){
+            const restBtn = document.getElementsByClassName('restBtn')
+            for (const btn of restBtn) {
+                btn.onclick = (e) => {
+                    const id = e.target.getAttribute('data-id')
+                    console.log("este es el ID",id);
+                    fetch(`/api/cart/1/products/${id}`,{method:'DELETE'})
+                    .then(response =>
+                            fetch('/api/cart/1/products')
+                            .then(response => response.json())
+                            .then(products => {
+                                let html = `<div class="card-group">`;
+                                for (const product of products) {
+                                    html +=  printCartProducts(product);
                                 }
 
                                 html += `</div>`;
                                 
-                                document.getElementById('products').innerHTML = html
-                                loadEvent()
+                                document.getElementById('cart').innerHTML = html
                                     }
                                     )
                     )
