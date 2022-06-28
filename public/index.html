@@ -38,7 +38,7 @@
     
         <button id="load">Cargar</button>
       </form>
-
+<!--
     <div id="actProd">
         <h2>Actualizar Producto</h2>
         <form class="mb-3" id="newProduct" action='/api/products' method="post">
@@ -63,7 +63,7 @@
             <button id="updateBtn">Actualizar</button>
         </form>
     </div>
-
+-->
       <h2>Carrito</h2>
       <div id="cart"></div>
 
@@ -135,7 +135,7 @@
                 
                         document.getElementById('cart').innerHTML = html
                         loadEvent()
-                        loadCartEvent()
+                        //loadCartEvent()
                     })
                         
                         .catch((error) => {
@@ -167,7 +167,7 @@
                             html += `</div>`;
                 
                         document.getElementById('cart').innerHTML = html
-                        loadCartEvent()
+                        //loadCartEvent()
                         
                     })    
                         .catch((error) => {
@@ -205,7 +205,7 @@
                 }
             }
         }
-
+/*
         function loadCartEvent(){
             const restBtn = document.getElementsByClassName('restBtn')
             for (const btn of restBtn) {
@@ -235,7 +235,7 @@
                 }
             }
         }
-
+*/
     </script>
     <script src="/app.js"></script>
     <script src="/public/main.js"></script>
